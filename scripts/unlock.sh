@@ -17,7 +17,7 @@ load_env() {
     value="${value%\"}"
     value="${value#\'}"
     value="${value%\'}"
-    if [[ "$key" == "GH_TOKEN" || "$key" == "GITHUB_TOKEN" || "$key" == "COAUTHOR_NAME" || "$key" == "COAUTHOR_EMAIL" ]]; then
+    if [[ "$key" == "GH_TOKEN" || "$key" == "GITHUB_TOKEN" || "$key" == "GIT_USER_NAME" || "$key" == "GIT_USER_EMAIL" || "$key" == "COAUTHOR_NAME" || "$key" == "COAUTHOR_EMAIL" ]]; then
       if [[ -z "${!key:-}" ]]; then
         export "$key=$value"
       fi
@@ -25,8 +25,24 @@ load_env() {
   done < .env
 }
 
+apply_git_identity() {
+  local name="${GIT_USER_NAME:-${GIT_AUTHOR_NAME:-}}"
+  local email="${GIT_USER_EMAIL:-${GIT_AUTHOR_EMAIL:-}}"
+  if [[ -z "$name" || -z "$email" ]]; then
+    echo "Set GIT_USER_NAME and GIT_USER_EMAIL in .env so Git can create commits."
+    exit 1
+  fi
+  export GIT_AUTHOR_NAME="$name"
+  export GIT_AUTHOR_EMAIL="$email"
+  export GIT_COMMITTER_NAME="$name"
+  export GIT_COMMITTER_EMAIL="$email"
+  git config --local user.name "$name" >/dev/null 2>&1 || true
+  git config --local user.email "$email" >/dev/null 2>&1 || true
+}
+
 require_gh() {
   load_env
+  apply_git_identity
   if ! command -v gh >/dev/null 2>&1; then
     echo "GitHub CLI is required. Install it from https://cli.github.com."
     exit 1

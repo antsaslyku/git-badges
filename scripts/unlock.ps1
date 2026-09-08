@@ -35,7 +35,7 @@ function Load-DotEnv {
         if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
             $value = $value.Substring(1, $value.Length - 2)
         }
-        if ($key -in @("GH_TOKEN", "GITHUB_TOKEN", "COAUTHOR_NAME", "COAUTHOR_EMAIL")) {
+        if ($key -in @("GH_TOKEN", "GITHUB_TOKEN", "GIT_USER_NAME", "GIT_USER_EMAIL", "COAUTHOR_NAME", "COAUTHOR_EMAIL")) {
             $existing = [Environment]::GetEnvironmentVariable($key)
             if (-not $existing) {
                 Set-Item -Path "Env:$key" -Value $value
@@ -44,8 +44,27 @@ function Load-DotEnv {
     }
 }
 
+function Apply-GitIdentity {
+    $name = if ($env:GIT_USER_NAME) { $env:GIT_USER_NAME } else { $env:GIT_AUTHOR_NAME }
+    $email = if ($env:GIT_USER_EMAIL) { $env:GIT_USER_EMAIL } else { $env:GIT_AUTHOR_EMAIL }
+    if (-not $name -or -not $email) {
+        Write-Host "Set GIT_USER_NAME and GIT_USER_EMAIL in .env so Git can create commits."
+        exit 1
+    }
+    $env:GIT_AUTHOR_NAME = $name
+    $env:GIT_AUTHOR_EMAIL = $email
+    $env:GIT_COMMITTER_NAME = $name
+    $env:GIT_COMMITTER_EMAIL = $email
+    $previous = $ErrorActionPreference
+    $ErrorActionPreference = "SilentlyContinue"
+    git config --local user.name $name | Out-Null
+    git config --local user.email $email | Out-Null
+    $ErrorActionPreference = $previous
+}
+
 function Require-Gh {
     Load-DotEnv
+    Apply-GitIdentity
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
         Write-Host "GitHub CLI is required. Install it from https://cli.github.com."
         exit 1

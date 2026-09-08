@@ -156,6 +156,28 @@ function requireGitRepo(): void {
   fail("This directory is not a git repository. Clone your fork, or run git init and add a GitHub origin remote.");
 }
 
+function applyGitIdentity(): void {
+  const name = (process.env.GIT_USER_NAME || process.env.GIT_AUTHOR_NAME || "").trim();
+  const email = (process.env.GIT_USER_EMAIL || process.env.GIT_AUTHOR_EMAIL || "").trim();
+  if (!name || !email) {
+    fail("Set GIT_USER_NAME and GIT_USER_EMAIL in .env so Git can create commits.");
+  }
+
+  process.env.GIT_AUTHOR_NAME = name;
+  process.env.GIT_AUTHOR_EMAIL = email;
+  process.env.GIT_COMMITTER_NAME = name;
+  process.env.GIT_COMMITTER_EMAIL = email;
+
+  spawnSync("git", ["config", "--local", "user.name", name], {
+    stdio: "ignore",
+    windowsHide: true,
+  });
+  spawnSync("git", ["config", "--local", "user.email", email], {
+    stdio: "ignore",
+    windowsHide: true,
+  });
+}
+
 function configureGitToUseGh(): void {
   spawnSync("git", ["config", "--local", "--unset-all", "credential.https://github.com.helper"], {
     stdio: "ignore",
@@ -192,6 +214,7 @@ function requireGh(): void {
     fail("GitHub CLI is required. Install it from https://cli.github.com.");
   }
   requireGitRepo();
+  applyGitIdentity();
 
   const token = githubToken();
   if (token) {
@@ -485,6 +508,7 @@ async function showMenu(coAuthorName: string, coAuthorEmail: string): Promise<vo
 async function main(): Promise<void> {
   loadDotEnv();
   markCwdSafeForGit();
+  applyGitIdentity();
   const { mode, coAuthorName, coAuthorEmail } = parseArgs(process.argv);
   switch (mode) {
     case "status":

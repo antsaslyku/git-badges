@@ -54,6 +54,27 @@ node scripts/unlock.ts status
 
 Do not commit `.env` or paste the token into chat.
 
+## Git says author identity is unknown
+
+The playground reads commit identity from `.env`:
+
+```bash
+GIT_USER_NAME=YourGitHubLogin
+GIT_USER_EMAIL=you@example.com
+```
+
+Then run `npm start` again. The script also writes those values into this repository's local Git config.
+
+## Git says "not in a git directory" or "dubious ownership"
+
+Git is refusing the folder because it was copied from another Windows account. Trust this directory:
+
+```bash
+git config --global --add safe.directory "$(pwd)"
+```
+
+Run that from the `git-badges` folder.
+
 ## The script says the working tree is dirty
 
 Commit or stash your changes before running the playground.

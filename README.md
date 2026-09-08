@@ -65,6 +65,8 @@ or copy `.env.example` to `.env` and set the token (`.env` is gitignored):
 
 ```bash
 GH_TOKEN=ghp_your_token
+GIT_USER_NAME=YourGitHubLogin
+GIT_USER_EMAIL=you@example.com
 COAUTHOR_NAME=OtherGitHubName
 COAUTHOR_EMAIL=other-account@users.noreply.github.com
 ```
