@@ -20,19 +20,11 @@ This project turns the mechanical parts into a guided practice flow while still 
 ## Main Script Modes
 
 ```bash
-bash scripts/unlock.sh status
-bash scripts/unlock.sh pull-yolo
-bash scripts/unlock.sh pair
-bash scripts/unlock.sh quickdraw
-```
-
-Windows PowerShell:
-
-```powershell
-.\scripts\unlock.ps1 -Mode status
-.\scripts\unlock.ps1 -Mode pull-yolo
-.\scripts\unlock.ps1 -Mode pair
-.\scripts\unlock.ps1 -Mode quickdraw
+npm start
+npm start -- status
+npm start -- pull-yolo
+npm start -- pair
+npm start -- quickdraw
 ```
 
 ## Best Search Terms For This Project

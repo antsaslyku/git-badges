@@ -413,8 +413,10 @@
           <pre><code>git clone https://github.com/YOUR_USERNAME/git-badges.git
 cd git-badges
 gh auth login
-bash scripts/unlock.sh</code></pre>
-          <pre><code>.\scripts\unlock.ps1</code></pre>
+npm start</code></pre>
+          <pre><code>npm start -- pull-yolo
+npm start -- quickdraw
+npm start -- pair --coauthor-name "Name" --coauthor-email "email@example.com"</code></pre>
         </section>
 
         <section class="card" id="pull-shark">
@@ -429,8 +431,7 @@ bash scripts/unlock.sh</code></pre>
             <li>GitHub CLI opens and merges the pull request.</li>
             <li>The process repeats for a second merged pull request.</li>
           </ol>
-          <pre><code>bash scripts/unlock.sh pull-yolo</code></pre>
-          <pre><code>.\scripts\unlock.ps1 -Mode pull-yolo</code></pre>
+          <pre><code>npm start -- pull-yolo</code></pre>
         </section>
 
         <section class="card" id="yolo">
@@ -448,8 +449,7 @@ bash scripts/unlock.sh</code></pre>
             <span class="pill green">Under 5 min</span>
           </div>
           <p>Quickdraw is tied to opening and closing an issue or pull request quickly. The playground creates an issue and closes it immediately through GitHub CLI.</p>
-          <pre><code>bash scripts/unlock.sh quickdraw</code></pre>
-          <pre><code>.\scripts\unlock.ps1 -Mode quickdraw</code></pre>
+          <pre><code>npm start -- quickdraw</code></pre>
         </section>
 
         <section class="card" id="pair">
@@ -460,8 +460,7 @@ bash scripts/unlock.sh</code></pre>
           <p>Pair Extraordinaire is tied to a merged pull request containing a valid co-authored commit trailer.</p>
           <pre><code>Co-authored-by: Name &lt;email@example.com&gt;</code></pre>
           <p>Use a real GitHub email for the co-author. Fake or unmatched emails may not count.</p>
-          <pre><code>COAUTHOR_NAME="Name" COAUTHOR_EMAIL="email@example.com" bash scripts/unlock.sh pair</code></pre>
-          <pre><code>.\scripts\unlock.ps1 -Mode pair -CoAuthorName "Name" -CoAuthorEmail "email@example.com"</code></pre>
+          <pre><code>npm start -- pair --coauthor-name "Name" --coauthor-email "email@example.com"</code></pre>
         </section>
 
         <section class="card" id="strategy">

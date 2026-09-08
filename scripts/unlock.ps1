@@ -20,12 +20,60 @@ function Require-CleanTree {
     }
 }
 
+function Load-DotEnv {
+    if (-not (Test-Path ".env")) {
+        return
+    }
+    Get-Content ".env" | ForEach-Object {
+        $line = $_.Trim()
+        if (-not $line -or $line.StartsWith("#") -or -not $line.Contains("=")) {
+            return
+        }
+        $separator = $line.IndexOf("=")
+        $key = $line.Substring(0, $separator).Trim()
+        $value = $line.Substring($separator + 1).Trim()
+        if (($value.StartsWith('"') -and $value.EndsWith('"')) -or ($value.StartsWith("'") -and $value.EndsWith("'"))) {
+            $value = $value.Substring(1, $value.Length - 2)
+        }
+        if ($key -in @("GH_TOKEN", "GITHUB_TOKEN", "COAUTHOR_NAME", "COAUTHOR_EMAIL")) {
+            $existing = [Environment]::GetEnvironmentVariable($key)
+            if (-not $existing) {
+                Set-Item -Path "Env:$key" -Value $value
+            }
+        }
+    }
+}
+
 function Require-Gh {
+    Load-DotEnv
     if (-not (Get-Command gh -ErrorAction SilentlyContinue)) {
-        Write-Host "GitHub CLI is required. Install it from https://cli.github.com and run gh auth login."
+        Write-Host "GitHub CLI is required. Install it from https://cli.github.com."
         exit 1
     }
-    Run-Gh auth status | Out-Host
+    if ($env:GH_TOKEN -or $env:GITHUB_TOKEN) {
+        if (-not $env:GH_TOKEN) {
+            $env:GH_TOKEN = $env:GITHUB_TOKEN
+        }
+        $login = Run-Gh api user --jq ".login"
+        if ($LASTEXITCODE -ne 0 -or -not $login) {
+            Write-Host "GitHub token is missing or invalid."
+            exit 1
+        }
+        $previous = $ErrorActionPreference
+        $ErrorActionPreference = "SilentlyContinue"
+        git config --local --unset-all credential.https://github.com.helper | Out-Null
+        $ErrorActionPreference = $previous
+        git config --local --add credential.https://github.com.helper ""
+        git config --local --add credential.https://github.com.helper "!gh auth git-credential"
+        Write-Host "Authenticated as $login via GH_TOKEN."
+        return
+    }
+    $status = & gh auth status
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "GitHub authentication is required. Run gh auth login, or put a repo-scoped token in .env as GH_TOKEN."
+        exit 1
+    }
+    $status | Out-Host
 }
 
 function Get-DefaultBranch {
@@ -140,6 +188,10 @@ function Show-Menu {
         default { Write-Host "Unknown choice." }
     }
 }
+
+Load-DotEnv
+if (-not $CoAuthorName -and $env:COAUTHOR_NAME) { $CoAuthorName = $env:COAUTHOR_NAME }
+if (-not $CoAuthorEmail -and $env:COAUTHOR_EMAIL) { $CoAuthorEmail = $env:COAUTHOR_EMAIL }
 
 switch ($Mode) {
     "status" { Show-Status }

@@ -17,13 +17,7 @@ GitHub badges, also called GitHub profile achievements, appear on a user's GitHu
 Pull Shark is related to merged pull requests. In Git Badges Playground, run:
 
 ```bash
-bash scripts/unlock.sh pull-yolo
-```
-
-On Windows:
-
-```powershell
-.\scripts\unlock.ps1 -Mode pull-yolo
+npm start -- pull-yolo
 ```
 
 The script creates two real branches, opens two pull requests, merges them, and deletes the remote branches.
@@ -39,13 +33,7 @@ Branch protection rules that require reviews can prevent this workflow from coun
 Quickdraw is related to closing an issue or pull request quickly after opening it.
 
 ```bash
-bash scripts/unlock.sh quickdraw
-```
-
-On Windows:
-
-```powershell
-.\scripts\unlock.ps1 -Mode quickdraw
+npm start -- quickdraw
 ```
 
 ## Pair Extraordinaire
@@ -53,13 +41,7 @@ On Windows:
 Pair Extraordinaire is related to a merged pull request containing a co-authored commit.
 
 ```bash
-COAUTHOR_NAME="Name" COAUTHOR_EMAIL="email@example.com" bash scripts/unlock.sh pair
-```
-
-On Windows:
-
-```powershell
-.\scripts\unlock.ps1 -Mode pair -CoAuthorName "Name" -CoAuthorEmail "email@example.com"
+npm start -- pair --coauthor-name "Name" --coauthor-email "email@example.com"
 ```
 
 Use a real GitHub email for the co-author.

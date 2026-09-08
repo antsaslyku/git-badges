@@ -1,16 +1,50 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-MODE="${1:-menu}"
-COAUTHOR_NAME="${COAUTHOR_NAME:-}"
-COAUTHOR_EMAIL="${COAUTHOR_EMAIL:-}"
+load_env() {
+  [[ -f .env ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ -z "$line" || "$line" == \#* ]] && continue
+    [[ "$line" == *=* ]] || continue
+    local key="${line%%=*}"
+    local value="${line#*=}"
+    key="${key%"${key##*[![:space:]]}"}"
+    key="${key#"${key%%[![:space:]]*}"}"
+    value="${value%"${value##*[![:space:]]}"}"
+    value="${value#"${value%%[![:space:]]*}"}"
+    value="${value#\"}"
+    value="${value%\"}"
+    value="${value#\'}"
+    value="${value%\'}"
+    if [[ "$key" == "GH_TOKEN" || "$key" == "GITHUB_TOKEN" || "$key" == "COAUTHOR_NAME" || "$key" == "COAUTHOR_EMAIL" ]]; then
+      if [[ -z "${!key:-}" ]]; then
+        export "$key=$value"
+      fi
+    fi
+  done < .env
+}
 
 require_gh() {
+  load_env
   if ! command -v gh >/dev/null 2>&1; then
-    echo "GitHub CLI is required. Install it from https://cli.github.com and run gh auth login."
+    echo "GitHub CLI is required. Install it from https://cli.github.com."
     exit 1
   fi
-  gh auth status
+  if [[ -n "${GH_TOKEN:-}${GITHUB_TOKEN:-}" ]]; then
+    export GH_TOKEN="${GH_TOKEN:-$GITHUB_TOKEN}"
+    local login
+    login="$(gh api user --jq .login)"
+    git config --local --unset-all credential.https://github.com.helper >/dev/null 2>&1 || true
+    git config --local --add credential.https://github.com.helper ""
+    git config --local --add credential.https://github.com.helper "!gh auth git-credential"
+    echo "Authenticated as ${login} via GH_TOKEN."
+    return
+  fi
+  if ! gh auth status; then
+    echo "GitHub authentication is required. Run gh auth login, or put a repo-scoped token in .env as GH_TOKEN."
+    exit 1
+  fi
 }
 
 require_clean_tree() {
@@ -134,6 +168,11 @@ show_menu() {
     *) echo "Unknown choice." ;;
   esac
 }
+
+load_env
+MODE="${1:-menu}"
+COAUTHOR_NAME="${COAUTHOR_NAME:-}"
+COAUTHOR_EMAIL="${COAUTHOR_EMAIL:-}"
 
 case "$MODE" in
   status) show_status ;;

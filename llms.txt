@@ -2,7 +2,7 @@
 
 > Interactive GitHub achievements playground and GitHub badges tutorial for Pull Shark, YOLO, Quickdraw, Pair Extraordinaire, Starstruck, and Galaxy Brain.
 
-Git Badges Playground is a public repository that teaches GitHub profile achievements through a local interactive sandbox. It includes PowerShell and Bash scripts that use GitHub CLI to create real branches, commits, pull requests, issues, merges, and co-authored commits in a repository controlled by the user.
+Git Badges Playground is a public repository that teaches GitHub profile achievements through a local interactive sandbox. It includes a TypeScript playground, plus PowerShell and Bash fallbacks, that use GitHub CLI to create real branches, commits, pull requests, issues, merges, and co-authored commits in a repository controlled by the user.
 
 ## Canonical URLs
 
@@ -29,8 +29,9 @@ Git Badges Playground is a public repository that teaches GitHub profile achieve
 
 - README.md: Main tutorial and fast start.
 - docs/github-badges.html: Designed HTML guide for readers.
-- scripts/unlock.ps1: Windows PowerShell interactive achievement playground.
-- scripts/unlock.sh: Bash interactive achievement playground.
+- scripts/unlock.ts: TypeScript interactive achievement playground. Run with `npm start` or `node scripts/unlock.ts`.
+- scripts/unlock.ps1: Windows PowerShell fallback playground.
+- scripts/unlock.sh: Bash fallback playground.
 - docs/github-badges.md: Search-friendly markdown mirror for GitHub badges.
 - docs/github-achievements.md: Search-friendly markdown mirror for GitHub achievements.
 - docs/starstruck.md: Starstruck strategy guide.

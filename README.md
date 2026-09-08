@@ -2,7 +2,7 @@
 
 An interactive sandbox and tutorial for learning GitHub profile badges, GitHub achievements, Pull Shark, YOLO, Quickdraw, Pair Extraordinaire, Starstruck, and Galaxy Brain.
 
-Most GitHub badges guides tell you what to do. This repo gives you a guided local script that creates real branches, commits, pull requests, issues, and merges in your own fork or repository so you can understand the workflow while aiming for achievements like Pull Shark, YOLO, Quickdraw, and Pair Extraordinaire.
+Most GitHub badges guides tell you what to do. This repo gives you a guided TypeScript playground that creates real branches, commits, pull requests, issues, and merges in your own fork or repository so you can understand the workflow while aiming for achievements like Pull Shark, YOLO, Quickdraw, and Pair Extraordinaire.
 
 > Important: GitHub decides when achievements are awarded. This project helps you perform legitimate qualifying actions, but it cannot guarantee instant badge unlocks.
 
@@ -20,35 +20,59 @@ Most GitHub badges guides tell you what to do. This repo gives you a guided loca
 
 ## Fast Start
 
-Fork this repository, clone your fork, then run the script for your shell.
-
-### Windows PowerShell
-
-```powershell
-git clone https://github.com/YOUR_USERNAME/git-badges.git
-cd git-badges
-.\scripts\unlock.ps1
-```
-
-### macOS, Linux, or Git Bash
+Fork this repository, clone your fork, then run the TypeScript playground. Node.js 22.18 or newer is required.
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/git-badges.git
 cd git-badges
-bash scripts/unlock.sh
+npm start
 ```
+
+That opens a menu. To skip the menu:
+
+```bash
+npm start -- status
+npm start -- pull-yolo
+npm start -- quickdraw
+npm start -- pair --coauthor-name "Name" --coauthor-email "email@example.com"
+```
+
+You can also run the file directly:
+
+```bash
+node scripts/unlock.ts
+```
+
+The older PowerShell and Bash scripts in `scripts/` still work if you prefer them.
 
 ## Requirements
 
+- Node.js 22.18 or newer
 - Git
 - GitHub CLI: `gh`
 - A public GitHub repository that you own or can push to
-- GitHub CLI authenticated with `gh auth login`
+- GitHub authentication: either `gh auth login` or a repo-scoped `GH_TOKEN`
+
+Create a classic token with the `repo` scope, or a fine-grained token with access to this repository and Contents, Pull requests, and Issues read/write: https://github.com/settings/tokens
+
+Then either log in:
+
+```bash
+gh auth login
+```
+
+or copy `.env.example` to `.env` and set the token (`.env` is gitignored):
+
+```bash
+GH_TOKEN=ghp_your_token
+COAUTHOR_NAME=OtherGitHubName
+COAUTHOR_EMAIL=other-account@users.noreply.github.com
+```
 
 Check authentication:
 
 ```bash
-gh auth status
+node scripts/unlock.ts status
 ```
 
 ## What The Script Does
@@ -58,7 +82,7 @@ The script is an interactive assistant. You choose what to run:
 - `pull-yolo`: creates two small branches, opens two PRs, merges them without review, then deletes the branches.
 - `pair`: creates a branch with a `Co-authored-by:` commit trailer, opens a PR, and merges it.
 - `quickdraw`: creates an issue and closes it quickly.
-- `status`: checks GitHub CLI login, remote config, and repository visibility.
+- `status`: checks GitHub authentication, remote config, and repository visibility.
 
 The script writes small entries into `playground-log.md` so every PR has a real file change.
 
@@ -80,13 +104,19 @@ If your repository has branch protection that requires review, YOLO will not tri
 
 Pair Extraordinaire is awarded for co-authoring a merged pull request.
 
-The `pair` mode asks for a co-author name and GitHub email, creates a commit with this format, then merges the PR:
+The `pair` mode reads `COAUTHOR_NAME` and `COAUTHOR_EMAIL` from `.env`, then creates a commit with this format and merges the PR:
 
 ```text
 Co-authored-by: Name <email@example.com>
 ```
 
-Use a real GitHub email for the co-author. Fake or unmatched emails may not count.
+Keep `GH_TOKEN` as the account that opens the PR (`kinexbtdev`). Put the **other** GitHub account in `COAUTHOR_NAME` / `COAUTHOR_EMAIL`. The email must already be verified on that second GitHub account (Settings → Emails). A GitHub noreply address counts:
+
+```text
+12345678+username@users.noreply.github.com
+```
+
+You can find that address on the second account under Settings → Emails, or from `https://api.github.com/users/USERNAME` (`id` plus login).
 
 ### Quickdraw
 

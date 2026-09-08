@@ -1,0 +1,15 @@
+{
+  "name": "git-badges",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.18.0"
+  },
+  "scripts": {
+    "start": "node scripts/unlock.ts",
+    "playground": "node scripts/unlock.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.3.0"
+  }
+}

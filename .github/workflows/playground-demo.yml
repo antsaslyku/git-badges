@@ -15,6 +15,6 @@ jobs:
       - name: Explain the playground
         run: |
           echo "Git Badges Playground is designed to be run locally with GitHub CLI."
-          echo "Run: bash scripts/unlock.sh"
-          echo "On Windows, run: .\\scripts\\unlock.ps1"
+          echo "Run: npm start"
+          echo "Or: node scripts/unlock.ts"
           echo "Local execution is preferred because achievement credit depends on real user activity."

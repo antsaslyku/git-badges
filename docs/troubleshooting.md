@@ -1,18 +1,58 @@
 # Troubleshooting
 
+## Node.js is missing or too old
+
+The TypeScript playground needs Node.js 22.18 or newer.
+
+```bash
+node --version
+npm start
+```
+
+If you cannot upgrade Node, the PowerShell and Bash scripts in `scripts/` still work.
+
+## PowerShell says running scripts is disabled
+
+Windows is blocking `npm.ps1`. Do not use `npm start` in that terminal. Run Node directly:
+
+```powershell
+node scripts/unlock.ts
+```
+
+Or call the cmd shim instead:
+
+```powershell
+npm.cmd start
+```
+
+To allow scripts for this terminal only:
+
+```powershell
+Set-ExecutionPolicy -Scope Process Bypass
+npm start
+```
+
 ## GitHub CLI is not logged in
 
-Run:
+You can use a browser login:
 
 ```bash
 gh auth login
 ```
 
+Or skip that and use a token. Copy `.env.example` to `.env`, then add a repo-scoped token from https://github.com/settings/tokens:
+
+```bash
+GH_TOKEN=ghp_your_token
+```
+
 Then verify:
 
 ```bash
-gh auth status
+node scripts/unlock.ts status
 ```
+
+Do not commit `.env` or paste the token into chat.
 
 ## The script says the working tree is dirty
 
